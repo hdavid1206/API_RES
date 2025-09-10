@@ -19,10 +19,10 @@ class LibroViewSet(viewsets.ModelViewSet):
     queryset = Libro.objects.all()
     serializer_class = LibroSerializer
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['genero', 'disponible', 'autor']
-    search_fields = ['titulo', 'autor__nombre', 'autor__apellido']
-    ordering_fields = ['titulo', 'fecha_publicacion']
-    ordering = ['-fecha_publicacion']
+    filterset_fields = ['genero', 'disponible', 'Autor']  # Cambiado a 'Autor' con mayúscula
+    search_fields = ['titulo', 'Autor__nombre', 'Autor__apellido']  # Cambiado a 'Autor' con mayúscula
+    ordering_fields = ['titulo', 'fecha_publication']  # Cambiado a 'fecha_publication'
+    ordering = ['-fecha_publication']  # Cambiado a 'fecha_publication'
     
     @action(detail=False, methods=['get'])
     def disponibles(self, request):
@@ -30,7 +30,7 @@ class LibroViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(libros_disponibles, many=True)
         return Response(serializer.data)
     
-    @action(detail=False, methods=['post'])
+    @action(detail=True, methods=['post'])  # Cambiado a detail=True
     def prestar(self, request, pk=None):
         libro = self.get_object()
         if not libro.disponible:
@@ -73,4 +73,4 @@ class PrestamoViewSet(viewsets.ModelViewSet):
         prestamo.save()
         prestamo.libro.save()
         
-        return Response({'mensaje': 'Libro  devuelto exitosamente'})
+        return Response({'mensaje': 'Libro devuelto exitosamente'})
