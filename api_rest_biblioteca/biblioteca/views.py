@@ -30,4 +30,47 @@ class LibroViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(libros_disponibles, many=True)
         return Response(serializer.data)
     
+    @action(detail=False, methods=['post'])
+    def prestar(self, request, pk=None):
+        libro = self.get_object()
+        if not libro.disponible:
+            return Response(
+                {'error': 'Libro no disponible'}, 
+                status=status.HTTP_400_BAD_REQUEST
+                )
+            
+        prestamo = Prestamo.objects.create(
+            libro=libro,
+            usuario=request.user
+            )
+        libro.disponible = False
+        libro.save()
+        
+        return Response({'mensaje': f'Libro "{libro.titulo}" prestado exitosamente'})
+
+class PrestamoViewSet(viewsets.ModelViewSet):
+    serializer_class = PrestamoSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ['devuelto','usuario']
+    ordering = ['-fecha_prestamo']
     
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Prestamo.objects.all()
+        return Prestamo.objects.filter(usuario=self.request.user)
+    
+    @action(detail=True, methods=['post'])
+    def devolver(self, request, pk=None):
+        prestamo = self.get_object()
+        if prestamo.devuelto:
+            return Response(
+                {'error': 'Este libro ya fue devuelto'}, 
+                status=status.HTTP_400_BAD_REQUEST
+                )
+            
+        prestamo.devuelto = True
+        prestamo.libro.disponible = True
+        prestamo.save()
+        prestamo.libro.save()
+        
+        return Response({'mensaje': 'Libro  devuelto exitosamente'})
