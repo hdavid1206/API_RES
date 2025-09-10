@@ -8,5 +8,5 @@ router.register(r'libros', views.LibroViewSet)
 router.register(r'prestamos', views.PrestamoViewSet, basename='prestamos')
 
 urlpatterns = [
-    path('api', include(router.urls)),
+    path('api/', include(router.urls)),
 ]
