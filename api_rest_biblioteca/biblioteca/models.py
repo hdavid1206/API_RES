@@ -18,7 +18,6 @@ class Libro(models.Model):
         ('no_ficcion', 'No ficción'),
         ('fantasia', 'Fantasía'),
         ('ciencia', 'Ciencia'),
-        ('historia', 'historia'),
         ('otro', 'Otro'),
     ]
     
@@ -38,7 +37,7 @@ class Prestamo(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_prestamo = models.DateField(auto_now_add=True)
     fecha_devolucion = models.DateField(null=True, blank=True)
-    devuelto = models.BooleanField(default=True)
+    devuelto = models.BooleanField(default=False)  # Cambiar a False por defecto
     
     def __str__(self):
         return f"{self.libro.titulo} - {self.usuario.username}"

@@ -55,9 +55,15 @@ class PrestamoViewSet(viewsets.ModelViewSet):
     ordering = ['-fecha_prestamo']
     
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Prestamo.objects.all()
-        return Prestamo.objects.filter(usuario=self.request.user)
+        # Para pruebas, permitir ver todos los préstamos
+        # En producción, descomenta las líneas de abajo para filtrar por usuario
+        return Prestamo.objects.all()
+        
+        # if self.request.user and self.request.user.is_authenticated:
+        #     if self.request.user.is_staff:
+        #         return Prestamo.objects.all()
+        #     return Prestamo.objects.filter(usuario=self.request.user)
+        # return Prestamo.objects.none()
     
     @action(detail=True, methods=['post'])
     def devolver(self, request, pk=None):
